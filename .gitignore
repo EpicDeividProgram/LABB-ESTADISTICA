@@ -1,0 +1,26 @@
+# Ignorar el entorno virtual
+Venv/
+venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de configuración de editores
+.vscode/
+.idea/
+
+# Archivos de configuración de Jupyter
+.ipynb_checkpoints/
+
+# Archivos temporales
+*.log
+*.bak
+*.swp
+
+# Dependencias de Node.js (si usas Node en tu proyecto)
+node_modules/
+
+# Archivos de entorno (si usas variables de entorno, por ejemplo .env)
+.env
