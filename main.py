@@ -180,3 +180,102 @@ df_resultados = df_resultados.fillna("")
 # Mostrar la tabla resultante
 table = tabulate(df_resultados, headers='keys', tablefmt='grid', showindex=True)
 print(table)
+print("\n")
+########################################################################################################################
+
+# Nivel de significancia
+nivel_significancia = 0.95
+alfa = 1 - nivel_significancia
+print(f"α (alfa): {round(alfa, 4)}\n")
+
+# Número de tratamientos (columnas)
+t = len(df.columns)
+
+# Grados de libertad del tratamiento
+gl_tratamiento = t - 1
+print(f"gl(tratamiento): {gl_tratamiento}\n")
+
+# Grados de libertad del error
+Σnt_4col = df_resultados.at["nt", "Total suma"]
+gl_error = Σnt_4col - t  
+print(f"gl(error): {round(gl_error, 4)}\n")
+
+# Factor de corrección (C)
+Σxt_4col = df_resultados.at["Σxt", "Total suma"]
+c = (Σxt_4col ** 2) / Σnt_4col 
+print(f"Factor de corrección (C): {round(c, 4)}\n")
+
+# Suma Total de Cuadrados (SCT)
+Σxt2_4col = df_resultados.at["Σxt²", "Total suma"]
+sct = Σxt2_4col - c 
+print(f"Suma Total de Cuadrados (SCT): {round(sct, 4)}\n")
+
+# Suma Cuadrada de Tratamiento (SCTR)
+ΣxtcuaN_4col = df_resultados.at["(Σxt)² / nt", "Total suma"]
+sctr = ΣxtcuaN_4col - c
+print(f"Suma Cuadrada de Tratamiento (SCTR): {round(sctr, 4)}\n")
+
+# Suma Cuadrada de Error (SCE)
+sce = sct - sctr
+print(f"Suma Cuadrada de Error (SCE): {round(sce, 4)}\n")
+
+# Calcular n - 1 (grados de libertad totales)
+nt_1 = Σnt_4col - 1
+print(f"n - 1: {round(nt_1, 4)}\n")
+
+# Media Cuadrada de Tratamiento (MCTR) y Media Cuadrada de Error (MCE)
+mctr = sctr / gl_tratamiento
+mce = sce / gl_error
+print(f"Media Cuadrada de Tratamiento (MCTR): {round(mctr, 4)}")
+print(f"Media Cuadrada de Error (MCE): {round(mce, 4)}\n")
+
+# Razón de Variación (Fisher)
+f = mctr / mce
+print(f"F (Razón de Variación de Fisher): {round(f, 4)}\n")
+
+# Razón de Variación (Fisher)
+f_rv = f
+
+# Crear el DataFrame de la fuente de variación
+fuente_variacion = pd.DataFrame({
+    "Fuentes de variación": [
+        "│ (Tratamiento) │", 
+        "│ (Error)       │", 
+        "│ (Total)       │"
+    ],
+    "SC": [
+        f"│ ({round(sctr, 4)}) │", 
+        f"│ ({round(sce, 4)}) │", 
+        f"│ ({round(sct, 4)}) │"
+    ],
+    "gl": [
+        f"│ ({round(gl_tratamiento, 4)}) │", 
+        f"│ ({round(gl_error, 4)}) │", 
+        f"│ ({round(nt_1, 4)}) │"
+    ],
+    "MC": [
+        f"│ ({round(mctr, 4)}) │", 
+        f"│ ({round(mce, 4)}) │", 
+        "│ (********) │"
+    ],
+    "F (RV)": [
+        f"│ ({round(f_rv, 4)}) │", 
+        "│ (********) │", 
+        "│ (********) │"
+    ]
+})
+
+# Imprimo la tabla con tabulate
+print("\nFuente de Variación:")
+print(tabulate(fuente_variacion, headers="keys", tablefmt="grid"))
+
+# Cálculo de F tabular
+Ftab = stats.f.ppf(1 - alfa, gl_tratamiento, gl_error)
+print(f"\nF tabular: {round(Ftab, 4)}\n")
+
+# Comparación y decisión
+decision = "Rechazar H₀ (Existe diferencia significativa)" if f > Ftab else "Aceptar H₀ (No hay diferencia significativa)"
+print(f"Decisión: {decision}")
+
+########################################################################################################################
+
