@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import studentized_range
+from scipy.stats import linregress
 
 # Cargar el archivo CSV en el DataFrame
 df = pd.read_csv('data/datos_estudio.csv')
@@ -327,3 +328,95 @@ for g1, g2 in pares:
 print("\nComparación de Medias - Prueba de Tukey\n")
 headers = ["Grupo 1", "Grupo 2", "Diferencia", "DHS", "Independencia"]
 print(tabulate(tabla, headers=headers, tablefmt="grid"))
+print("\n")
+######################################################################################################################
+
+"""tengo que hacer la tabla x1 y1 x elevado al 2 y elevado al cuadrado y x.y esa tabla debo hacerla 
+por cada par que sea independiente es decir debo hacer dos tablas con la misma estructura de las tablas que hemos trabajado esto
+para hallar la correlacion y la recta lineal de ajuste y luego hacer los calulos de correlacion y regresion  """  
+    
+    # Funcion para crear tablas de x1, y1, x^2, y^2, x.y
+def generar_tabla_correlacion(df, var_x, var_y):
+    
+    df_resultado = pd.DataFrame({
+        f"x1 ({var_x})": df[var_x].round(4),
+        f"y1 ({var_y})": df[var_y].round(4),
+        f"x1²": (df[var_x] ** 2).round(4),
+        f"y1²": (df[var_y] ** 2).round(4),
+        f"x1.y1": (df[var_x] * df[var_y]).round(4)
+    })
+    
+    # Calculamos la suma de x1, y1, x1², y1², x1.y1
+    suma_columnas = {
+        f"x1 ({var_x})": df[var_x].sum().round(4),
+        f"y1 ({var_y})": df[var_y].sum().round(4),
+        f"x1²": (df[var_x] ** 2).sum().round(4),
+        f"y1²": (df[var_y] ** 2).sum().round(4),
+        f"x1.y1": (df[var_x] * df[var_y]).sum().round(4)
+    }
+
+    # Añadimos las sumas al final de la tabla
+    df_resultado.loc["Σ"] = suma_columnas
+
+    return df_resultado
+
+# Genero las tablas para los pares independientes
+tabla_humedad_presion = generar_tabla_correlacion(df, "Humedad", "Presion")
+tabla_temperatura_presion = generar_tabla_correlacion(df, "Temperatura", "Presion")
+
+# Imprimo las tablas generadas
+print("Tabla Humedad vs Presión:")
+print(tabulate(tabla_humedad_presion, headers="keys", tablefmt="grid"))
+print("\n")
+
+print("Tabla Temperatura vs Presión:")
+print(tabulate(tabla_temperatura_presion, headers="keys", tablefmt="grid"))
+print("\n")
+
+# Calculo la correlacion para ambos pares
+correlacion_humedad_presion = df["Humedad"].corr(df["Presion"])
+correlacion_temperatura_presion = df["Temperatura"].corr(df["Presion"])
+
+
+print(f"Correlación (Humedad vs Presión): {round(correlacion_humedad_presion, 4)}")
+print(f"Correlación (Temperatura vs Presión): {round(correlacion_temperatura_presion, 4)}")
+print("\n")
+
+# Realizo la regresion lineal para ambos pares
+# Humedad vs Presion
+slope_hum, intercept_hum, _, _, _ = linregress(df["Humedad"], df["Presion"])
+# Temperatura vs Presion
+slope_temp, intercept_temp, _, _, _ = linregress(df["Temperatura"], df["Presion"])
+
+# Muestror la ecuacion de la recta de ajuste
+print(f"Ecuación de la recta para Humedad vs Presión: y = {round(slope_hum, 4)} * x + {round(intercept_hum, 4)}")
+print(f"Ecuación de la recta para Temperatura vs Presión: y = {round(slope_temp, 4)} * x + {round(intercept_temp, 4)}")
+
+
+# Función para graficar la dispersión y la recta de regresión
+def graficar_regresion(df, var_x, var_y, slope, intercept, title):
+    plt.figure(figsize=(8, 6))
+    
+    # Graficar puntos de dispersión
+    plt.scatter(df[var_x], df[var_y], color='blue', label='Datos', alpha=0.7)
+
+    # Graficar la recta de regresión
+    plt.plot(df[var_x], slope * df[var_x] + intercept, color='red', label=f'Recta de ajuste: y = {round(slope, 4)} * x + {round(intercept, 4)}')
+    
+    # Títulos y etiquetas
+    plt.title(title)
+    plt.xlabel(var_x)
+    plt.ylabel(var_y)
+    
+    # Mostrar leyenda
+    plt.legend()
+
+    # Mostrar el gráfico
+    plt.grid(True)
+    plt.show()
+
+# Graficar para Humedad vs Presión
+graficar_regresion(df, "Humedad", "Presion", slope_hum, intercept_hum, "Humedad vs Presión")
+
+# Graficar para Temperatura vs Presión
+graficar_regresion(df, "Temperatura", "Presion", slope_temp, intercept_temp, "Temperatura vs Presión")
