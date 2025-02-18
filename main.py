@@ -279,3 +279,51 @@ print(f"Decisión: {decision}")
 
 ########################################################################################################################
 
+# Calcular las medias de cada grupo
+x_oxido_nitroso = df_resultados.at["x̅ (Media)", "y (Oxido_nitroso)"]
+x_humedad = df_resultados.at["x̅ (Media)", "x1 (Humedad)"]
+x_temperatura = df_resultados.at["x̅ (Media)", "x2 (Temperatura)"]
+x_presion = df_resultados.at["x̅ (Media)", "x3 (Presion)"]
+
+num_grupos = t  # Número de grupos (columnas)
+
+# Valor crítico q para HSD
+q = studentized_range.ppf(1 - alfa, num_grupos, gl_error)
+
+# Calculo DHS (Diferencia Honestamente Significativa)
+nt_oxido_nitroso = cantidad_filas["Oxido_nitroso"]
+hsd = q * np.sqrt(mce / nt_oxido_nitroso)  
+
+print()
+print(f"Valor crítico q: {round(q, 4)}")
+print(f"Diferencia Honestamente Significativa (HSD): {round(hsd, 4)}")
+
+# Medias de cada grupo
+medias = {
+    "Óxido Nitroso": x_oxido_nitroso,
+    "Humedad": x_humedad,
+    "Temperatura": x_temperatura,
+    "Presión": x_presion
+}
+
+# Lista de pares para comparar
+pares = [
+    ("Óxido Nitroso", "Humedad"),
+    ("Óxido Nitroso", "Temperatura"),
+    ("Óxido Nitroso", "Presión"),
+    ("Humedad", "Temperatura"),
+    ("Humedad", "Presión"),
+    ("Temperatura", "Presión")
+]
+
+# Crear la tabla de resultados
+tabla = []
+for g1, g2 in pares:
+    meandiff = medias[g1] - medias[g2]
+    independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
+    tabla.append([g1, g2, f"{meandiff:.4f}", f"{hsd:.4f}", independencia])
+
+# Imprimir la tabla con tabulate
+print("\nComparación de Medias - Prueba de Tukey\n")
+headers = ["Grupo 1", "Grupo 2", "Diferencia", "DHS", "Independencia"]
+print(tabulate(tabla, headers=headers, tablefmt="grid"))
