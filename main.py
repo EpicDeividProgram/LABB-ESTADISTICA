@@ -278,6 +278,42 @@ print(f"\nF tabular: {round(Ftab, 4)}\n")
 decision = "Rechazar H₀ (Existe diferencia significativa)" if f > Ftab else "Aceptar H₀ (No hay diferencia significativa)"
 print(f"Decisión: {decision}")
 
+# Parámetros de la distribución F
+df1 = gl_tratamiento  # Grados de libertad del tratamiento
+df2 = gl_error        # Grados de libertad del error
+x = np.linspace(0, Ftab + 3, 1000)  # Rango de valores F
+y = stats.f.pdf(x, df1, df2)  # Distribución F
+
+# Crear el gráfico
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="Distribución F", color="blue")
+
+# Área de aceptación (F <= Ftab)
+x_accept = np.linspace(0, Ftab, 500)
+y_accept = stats.f.pdf(x_accept, df1, df2)
+plt.fill_between(x_accept, y_accept, color="lightblue", alpha=0.6, label="Región de Aceptación")
+
+# Área de rechazo (F > Ftab)
+x_reject = np.linspace(Ftab, Ftab + 3, 500)
+y_reject = stats.f.pdf(x_reject, df1, df2)
+plt.fill_between(x_reject, y_reject, color="red", alpha=0.6, label="Región de Rechazo")
+
+# Línea vertical en Ftab
+plt.axvline(Ftab, color="black", linestyle="dashed", label=f"F tabular = {round(Ftab, 4)}")
+
+# Línea vertical en F observado
+plt.axvline(f, color="green", linestyle="dashed", label=f"F observado = {round(f, 4)}")
+
+
+plt.xlabel("Valor F")
+plt.ylabel("Densidad de Probabilidad")
+plt.title("Distribución F de Fisher con Regiones de Aceptación y Rechazo")
+plt.legend()
+plt.grid()
+
+# Mostrar el gráfico
+plt.show()
+
 ########################################################################################################################
 
 # Calcular las medias de cada grupo
