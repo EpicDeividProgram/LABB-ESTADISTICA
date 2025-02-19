@@ -48,8 +48,8 @@ df_resultados = pd.DataFrame({
     "x1²": (df["Humedad"] ** 2).round(4),
     "x2 (Temperatura)": df["Temperatura"].round(4),
     "x2²": (df["Temperatura"] ** 2).round(4),
-    "x3 (Presion)": df["Presion"].round(4),
-    "x3²": (df["Presion"] ** 2).round(4)
+    "x3 (Presión)": df["Presión"].round(4),
+    "x3²": (df["Presión"] ** 2).round(4)
 })
 
 # Agregar la fila de sumas de Σxt
@@ -60,14 +60,14 @@ df_resultados.loc["Σxt"] = {
     "x1²": "",
     "x2 (Temperatura)": suma_columnas["Temperatura"],
     "x2²": "",
-    "x3 (Presion)": suma_columnas["Presion"],
+    "x3 (Presión)": suma_columnas["Presión"],
     "x3²": "",
 }
 
 # Añadir el total de las sumas en "Σxt"
 df_resultados.at["Σxt", "Total suma"] = round(
     suma_columnas["Oxido_nitroso"] + suma_columnas["Humedad"] +
-    suma_columnas["Temperatura"] + suma_columnas["Presion"], 4
+    suma_columnas["Temperatura"] + suma_columnas["Presión"], 4
 )
 
 # Agregar la fila de Σxt²
@@ -78,14 +78,14 @@ df_resultados.loc["Σxt²"] = {
     "x1²": suma_cuadrados["Humedad"],
     "x2 (Temperatura)": "",
     "x2²": suma_cuadrados["Temperatura"],
-    "x3 (Presion)": "",
-    "x3²": suma_cuadrados["Presion"],
+    "x3 (Presión)": "",
+    "x3²": suma_cuadrados["Presión"],
 }
 
 # Añadir el total de los cuadrados en "Σxt²"
 df_resultados.at["Σxt²", "Total suma"] = round(
     suma_cuadrados["Oxido_nitroso"] + suma_cuadrados["Humedad"] +
-    suma_cuadrados["Temperatura"] + suma_cuadrados["Presion"], 4
+    suma_cuadrados["Temperatura"] + suma_cuadrados["Presión"], 4
 )
 
 # Calcular el cuadrado de las sumas totales
@@ -93,7 +93,7 @@ suma_totales_cuadrado = {
     "y (Oxido_nitroso)": suma_columnas["Oxido_nitroso"] ** 2,
     "x1 (Humedad)": suma_columnas["Humedad"] ** 2,
     "x2 (Temperatura)": suma_columnas["Temperatura"] ** 2,
-    "x3 (Presion)": suma_columnas["Presion"] ** 2
+    "x3 (Presión)": suma_columnas["Presión"] ** 2
 }
 
 # Calcular la suma total de los cuadrados
@@ -107,7 +107,7 @@ df_resultados.loc["(Σxt)²"] = {
     "x1²": "",
     "x2 (Temperatura)": round(suma_totales_cuadrado["x2 (Temperatura)"], 4),
     "x2²": "",
-    "x3 (Presion)": round(suma_totales_cuadrado["x3 (Presion)"], 4),
+    "x3 (Presión)": round(suma_totales_cuadrado["x3 (Presión)"], 4),
     "x3²": "",
 }
 
@@ -122,12 +122,12 @@ df_resultados.loc["nt"] = {
     "x1²": "",
     "x2 (Temperatura)": cantidad_filas["Temperatura"],
     "x2²": "",
-    "x3 (Presion)": cantidad_filas["Presion"],
+    "x3 (Presión)": cantidad_filas["Presión"],
     "x3²": "",
 }
 
 # Añadir el total de las 'n' en "n"
-total_nt = cantidad_filas["Oxido_nitroso"] + cantidad_filas["Humedad"] + cantidad_filas["Temperatura"] + cantidad_filas["Presion"]
+total_nt = cantidad_filas["Oxido_nitroso"] + cantidad_filas["Humedad"] + cantidad_filas["Temperatura"] + cantidad_filas["Presión"]
 df_resultados.at["nt", "Total suma"] = int(total_nt)  # Convierte el total a entero
 
 
@@ -139,7 +139,7 @@ df_resultados.loc["(Σxt)² / nt"] = {
     "x1²": "",
     "x2 (Temperatura)": round(suma_totales_cuadrado["x2 (Temperatura)"] / cantidad_filas["Temperatura"], 4),
     "x2²": "",
-    "x3 (Presion)": round(suma_totales_cuadrado["x3 (Presion)"] / cantidad_filas["Presion"], 4),
+    "x3 (Presión)": round(suma_totales_cuadrado["x3 (Presión)"] / cantidad_filas["Presión"], 4),
     "x3²": "",
 }
 
@@ -148,7 +148,7 @@ total_xt2_n = (
     suma_totales_cuadrado["y (Oxido_nitroso)"] / cantidad_filas["Oxido_nitroso"] +
     suma_totales_cuadrado["x1 (Humedad)"] / cantidad_filas["Humedad"] +
     suma_totales_cuadrado["x2 (Temperatura)"] / cantidad_filas["Temperatura"] +
-    suma_totales_cuadrado["x3 (Presion)"] / cantidad_filas["Presion"]
+    suma_totales_cuadrado["x3 (Presión)"] / cantidad_filas["Presión"]
 )
 
 df_resultados.at["(Σxt)² / nt", "Total suma"] = round(total_xt2_n, 4)
@@ -161,7 +161,7 @@ df_resultados.loc["x̅ (Media)"] = {
     "x1²": "",
     "x2 (Temperatura)": round(suma_columnas["Temperatura"] / cantidad_filas["Temperatura"], 4),
     "x2²": "",
-    "x3 (Presion)": round(suma_columnas["Presion"] / cantidad_filas["Presion"], 4),
+    "x3 (Presión)": round(suma_columnas["Presión"] / cantidad_filas["Presión"], 4),
     "x3²": "",
 }
 
@@ -170,7 +170,7 @@ total_media = (
     suma_columnas["Oxido_nitroso"] / cantidad_filas["Oxido_nitroso"] +
     suma_columnas["Humedad"] / cantidad_filas["Humedad"] +
     suma_columnas["Temperatura"] / cantidad_filas["Temperatura"] +
-    suma_columnas["Presion"] / cantidad_filas["Presion"]
+    suma_columnas["Presión"] / cantidad_filas["Presión"]
 )
 
 df_resultados.at["x̅ (Media)", "Total suma"] = round(total_media, 4)
@@ -320,7 +320,7 @@ plt.show()
 x_oxido_nitroso = df_resultados.at["x̅ (Media)", "y (Oxido_nitroso)"]
 x_humedad = df_resultados.at["x̅ (Media)", "x1 (Humedad)"]
 x_temperatura = df_resultados.at["x̅ (Media)", "x2 (Temperatura)"]
-x_presion = df_resultados.at["x̅ (Media)", "x3 (Presion)"]
+x_Presión = df_resultados.at["x̅ (Media)", "x3 (Presión)"]
 
 num_grupos = t  # Número de grupos (columnas)
 
@@ -340,7 +340,7 @@ medias = {
     "Óxido Nitroso": x_oxido_nitroso,
     "Humedad": x_humedad,
     "Temperatura": x_temperatura,
-    "Presión": x_presion
+    "Presión": x_Presión
 }
 
 # Lista de pares para comparar
@@ -367,13 +367,8 @@ print(tabulate(tabla, headers=headers, tablefmt="grid"))
 print("\n")
 ######################################################################################################################
 
-"""tengo que hacer la tabla x1 y1 x elevado al 2 y elevado al cuadrado y x.y esa tabla debo hacerla 
-por cada par que sea independiente es decir debo hacer dos tablas con la misma estructura de las tablas que hemos trabajado esto
-para hallar la correlacion y la recta lineal de ajuste y luego hacer los calulos de correlacion y regresion  """  
-    
-    # Funcion para crear tablas de x1, y1, x^2, y^2, x.y
+
 def generar_tabla_correlacion(df, var_x, var_y):
-    
     df_resultado = pd.DataFrame({
         f"x1 ({var_x})": df[var_x].round(4),
         f"y1 ({var_y})": df[var_y].round(4),
@@ -382,7 +377,6 @@ def generar_tabla_correlacion(df, var_x, var_y):
         f"x1.y1": (df[var_x] * df[var_y]).round(4)
     })
     
-    # Calculamos la suma de x1, y1, x1², y1², x1.y1
     suma_columnas = {
         f"x1 ({var_x})": df[var_x].sum().round(4),
         f"y1 ({var_y})": df[var_y].sum().round(4),
@@ -390,69 +384,48 @@ def generar_tabla_correlacion(df, var_x, var_y):
         f"y1²": (df[var_y] ** 2).sum().round(4),
         f"x1.y1": (df[var_x] * df[var_y]).sum().round(4)
     }
-
-    # Añadimos las sumas al final de la tabla
+    
     df_resultado.loc["Σ"] = suma_columnas
-
     return df_resultado
 
-# Genero las tablas para los pares independientes
-tabla_humedad_presion = generar_tabla_correlacion(df, "Humedad", "Presion")
-tabla_temperatura_presion = generar_tabla_correlacion(df, "Temperatura", "Presion")
+# Crear una lista de pares independientes
+pares_independientes = []
 
-# Imprimo las tablas generadas
-print("Tabla Humedad vs Presión:")
-print(tabulate(tabla_humedad_presion, headers="keys", tablefmt="grid"))
-print("\n")
+# Analizar la tabla de comparación de medias
+for g1, g2, meandiff, hsd_val, independencia in tabla:
+    if independencia == "Independiente":
+        pares_independientes.append((g1, g2))
 
-print("Tabla Temperatura vs Presión:")
-print(tabulate(tabla_temperatura_presion, headers="keys", tablefmt="grid"))
-print("\n")
+# Función para generar las tablas de correlación automáticamente
+def generar_tablas_de_correlacion(df, pares):
+    for g1, g2 in pares:
+        print(f"Generando tabla de correlación para: {g1} vs {g2}")
+        tabla_correlacion = generar_tabla_correlacion(df, g1, g2)
+        print(tabulate(tabla_correlacion, headers="keys", tablefmt="grid"))
+        print("\n")
+        
+        # Calcular la correlación para los pares
+        correlacion = df[g1].corr(df[g2])
+        print(f"Correlación ({g1} vs {g2}): {round(correlacion, 4)}\n")
+        
+        # Realizar la regresión lineal para los pares
+        slope, intercept, _, _, _ = linregress(df[g1], df[g2])
+        print(f"Ecuación de la recta para {g1} vs {g2}: y = {round(slope, 4)} * x + {round(intercept, 4)}\n")
+        
+        
+        # Graficar la dispersión y la recta de regresión
+        plt.figure(figsize=(8, 6))
+        plt.scatter(df[g1], df[g2], color='blue', label='Datos', alpha=0.6)  # Puntos de dispersión
+        plt.plot(df[g1], slope * df[g1] + intercept, color='red', label=f'Recta de regresión: y = {round(slope, 4)} * x + {round(intercept, 4)}')  # Recta de regresión
+        plt.xlabel(f'{g1}')
+        plt.ylabel(f'{g2}')
+        plt.title(f'Dispersión y Recta de Regresión ({g1} vs {g2})')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
 
-# Calculo la correlacion para ambos pares
-correlacion_humedad_presion = df["Humedad"].corr(df["Presion"])
-correlacion_temperatura_presion = df["Temperatura"].corr(df["Presion"])
+# Llamar a la función para generar las tablas de correlación y regresión para los pares independientes
+generar_tablas_de_correlacion(df, pares_independientes)
 
+######################################################################################################################################################
 
-print(f"Correlación (Humedad vs Presión): {round(correlacion_humedad_presion, 4)}")
-print(f"Correlación (Temperatura vs Presión): {round(correlacion_temperatura_presion, 4)}")
-print("\n")
-
-# Realizo la regresion lineal para ambos pares
-# Humedad vs Presion
-slope_hum, intercept_hum, _, _, _ = linregress(df["Humedad"], df["Presion"])
-# Temperatura vs Presion
-slope_temp, intercept_temp, _, _, _ = linregress(df["Temperatura"], df["Presion"])
-
-# Muestror la ecuacion de la recta de ajuste
-print(f"Ecuación de la recta para Humedad vs Presión: y = {round(slope_hum, 4)} * x + {round(intercept_hum, 4)}")
-print(f"Ecuación de la recta para Temperatura vs Presión: y = {round(slope_temp, 4)} * x + {round(intercept_temp, 4)}")
-
-
-# Función para graficar la dispersión y la recta de regresión
-def graficar_regresion(df, var_x, var_y, slope, intercept, title):
-    plt.figure(figsize=(8, 6))
-    
-    # Graficar puntos de dispersión
-    plt.scatter(df[var_x], df[var_y], color='blue', label='Datos', alpha=0.7)
-
-    # Graficar la recta de regresión
-    plt.plot(df[var_x], slope * df[var_x] + intercept, color='red', label=f'Recta de ajuste: y = {round(slope, 4)} * x + {round(intercept, 4)}')
-    
-    # Títulos y etiquetas
-    plt.title(title)
-    plt.xlabel(var_x)
-    plt.ylabel(var_y)
-    
-    # Mostrar leyenda
-    plt.legend()
-
-    # Mostrar el gráfico
-    plt.grid(True)
-    plt.show()
-
-# Graficar para Humedad vs Presión
-graficar_regresion(df, "Humedad", "Presion", slope_hum, intercept_hum, "Humedad vs Presión")
-
-# Graficar para Temperatura vs Presión
-graficar_regresion(df, "Temperatura", "Presion", slope_temp, intercept_temp, "Temperatura vs Presión")
