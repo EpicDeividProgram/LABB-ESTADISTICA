@@ -431,42 +431,109 @@ generar_tablas_de_correlacion(df, pares_independientes)
 ######################################################################################################################################################
 
 
-y = df["Oxido_nitroso"]  # Variable dependiente
-X = df[["Humedad", "Temperatura", "Presión"]]  # Variables independientes
+"""
+necesito hacer la tabla de contingencia osea y, x1, x2, x3, x1i^2, x1i x x2i, x1i x x3i, x1i x yi, x2i^2, x2i x x3i, x2i x yi, x3i^2, x3i x yi
+usaremos la misma estructura de la tabla que traajamos
 
-# Añadir una columna de unos para el término de intersección (β0)
-X = sm.add_constant(X)
+luego aremos regresion multiple y luego el metodo de gausjordan y me debe dar por consola la matriz final osea la del resultado
+"""
+# Función para calcular la tabla de contingencia
+def crear_tabla_contingencia(df):
+    df_contingencia = pd.DataFrame({
+        "y (Oxido_nitroso)": df["Oxido_nitroso"].round(4),
+        "x1 (Humedad)": df["Humedad"].round(4),
+        "x2 (Temperatura)": df["Temperatura"].round(4),
+        "x3 (Presión)": df["Presión"].round(4),
+        "x1²": (df["Humedad"] ** 2).round(4),
+        "x1 * x2": (df["Humedad"] * df["Temperatura"]).round(4),
+        "x1 * x3": (df["Humedad"] * df["Presión"]).round(4),
+        "x1 * y": (df["Humedad"] * df["Oxido_nitroso"]).round(4),
+        "x2²": (df["Temperatura"] ** 2).round(4),
+        "x2 * x3": (df["Temperatura"] * df["Presión"]).round(4),
+        "x2 * y": (df["Temperatura"] * df["Oxido_nitroso"]).round(4),
+        "x3²": (df["Presión"] ** 2).round(4),
+        "x3 * y": (df["Presión"] * df["Oxido_nitroso"]).round(4)
+    })
 
-# Realizar la regresión múltiple
-modelo = sm.OLS(y, X).fit()
+    suma_contingencia = {
+        "y (Oxido_nitroso)": df["Oxido_nitroso"].sum(),
+        "x1 (Humedad)": df["Humedad"].sum(),
+        "x2 (Temperatura)": df["Temperatura"].sum(),
+        "x3 (Presión)": df["Presión"].sum(),
+        "x1²": (df["Humedad"] ** 2).sum(),
+        "x1 * x2": (df["Humedad"] * df["Temperatura"]).sum(),
+        "x1 * x3": (df["Humedad"] * df["Presión"]).sum(),
+        "x1 * y": (df["Humedad"] * df["Oxido_nitroso"]).sum(),
+        "x2²": (df["Temperatura"] ** 2).sum(),
+        "x2 * x3": (df["Temperatura"] * df["Presión"]).sum(),
+        "x2 * y": (df["Temperatura"] * df["Oxido_nitroso"]).sum(),
+        "x3²": (df["Presión"] ** 2).sum(),
+        "x3 * y": (df["Presión"] * df["Oxido_nitroso"]).sum()
+    }
 
-# Imprimir el resumen de la regresión
-summary = modelo.summary2().tables[1]
+    df_contingencia.loc["Σxt"] = suma_contingencia
+    return df_contingencia
+
+df_contingencia = crear_tabla_contingencia(df)
 
 
-summary = summary.rename(columns={
-    'coef': 'Coeficientes',
-    'std err': 'Error estándar',
-    't': 'Estadístico t',
-    'P>|t|': 'Valor p',
-    '[0.025': 'IC inferior',
-    '0.975]': 'IC superior'
-})
+print("Tabla de Contingencia:")
+print(tabulate(df_contingencia, headers='keys', tablefmt='grid', showindex=True, floatfmt='.2f'))
+############################################################################################################################
 
-print("\nResumen de la regresión múltiple:")
-print(summary)
+def gauss_jordan(A, B):
+    AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
+    n = len(B)
+    
+    for i in range(n):
+        # Hacer el pivote 1
+        AB[i] = AB[i] / AB[i, i]
+        
+        
+        for j in range(n):
+            if i != j:
+                AB[j] = AB[j] - AB[j, i] * AB[i]
+    
+    return AB[:, -1]  
 
-# Coeficientes de la regresión
-coeficientes = modelo.params
-print(f"\nCoeficientes de la regresión:")
-print(coeficientes)
+def calcular_regresion(df_contingencia):
+    
+    sumatorias = df_contingencia.loc["Σxt"]
+    n = len(df_contingencia) - 1  
+    
+    
+    A = np.array([
+        [n, sumatorias["x1 (Humedad)"], sumatorias["x2 (Temperatura)"]],
+        [sumatorias["x1 (Humedad)"], sumatorias["x1²"], sumatorias["x1 * x2"]],
+        [sumatorias["x2 (Temperatura)"], sumatorias["x1 * x2"], sumatorias["x2²"]]
+    ])
+    
+    
+    det_A = np.linalg.det(A)
+    if np.isclose(det_A, 0):
+        raise ValueError("La matriz A no es invertible (det(A) = 0). El sistema no tiene solución única.")
+    
+    
+    B = np.array([
+        sumatorias["x1 (Humedad)"],
+        sumatorias["x1 * x2"],
+        sumatorias["x1 * x3"]
+    ])
+    
+    
+    print("Matriz ampliada [A|B]:")
+    print(tabulate(np.hstack([A, B.reshape(-1, 1)]), headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
+    
+    
+    resultados = gauss_jordan(A, B)
+    
+    # Mostrar resultados
+    print("\nResultados:")
+    print(f"B0 = {resultados[0]:.4f}")
+    print(f"B1 = {resultados[1]:.4f}")
+    print(f"B2 = {resultados[2]:.4f}")
+    
+    return resultados
 
-# Graficar los residuos
-plt.figure(figsize=(8, 5))
-plt.scatter(modelo.fittedvalues, modelo.resid)
-plt.axhline(0, color='red', linestyle='--')
-plt.title('Residuos de la Regresión Múltiple')
-plt.xlabel('Valores ajustados')
-plt.ylabel('Residuos')
-plt.grid(True)
-plt.show()
+# Calcular los coeficientes de regresión
+coeficientes = calcular_regresion(df_contingencia)
