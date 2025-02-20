@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import studentized_range
 from scipy.stats import linregress
+import statsmodels.api as sm
 
 # Cargar el archivo CSV en el DataFrame
 df = pd.read_csv('data/datos_estudio.csv')
@@ -429,3 +430,43 @@ generar_tablas_de_correlacion(df, pares_independientes)
 
 ######################################################################################################################################################
 
+
+y = df["Oxido_nitroso"]  # Variable dependiente
+X = df[["Humedad", "Temperatura", "Presión"]]  # Variables independientes
+
+# Añadir una columna de unos para el término de intersección (β0)
+X = sm.add_constant(X)
+
+# Realizar la regresión múltiple
+modelo = sm.OLS(y, X).fit()
+
+# Imprimir el resumen de la regresión
+summary = modelo.summary2().tables[1]
+
+
+summary = summary.rename(columns={
+    'coef': 'Coeficientes',
+    'std err': 'Error estándar',
+    't': 'Estadístico t',
+    'P>|t|': 'Valor p',
+    '[0.025': 'IC inferior',
+    '0.975]': 'IC superior'
+})
+
+print("\nResumen de la regresión múltiple:")
+print(summary)
+
+# Coeficientes de la regresión
+coeficientes = modelo.params
+print(f"\nCoeficientes de la regresión:")
+print(coeficientes)
+
+# Graficar los residuos
+plt.figure(figsize=(8, 5))
+plt.scatter(modelo.fittedvalues, modelo.resid)
+plt.axhline(0, color='red', linestyle='--')
+plt.title('Residuos de la Regresión Múltiple')
+plt.xlabel('Valores ajustados')
+plt.ylabel('Residuos')
+plt.grid(True)
+plt.show()
