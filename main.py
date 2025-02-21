@@ -1,15 +1,16 @@
-import pandas as pd
-import scipy.stats as stats
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-from tabulate import tabulate
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy.stats import studentized_range
-from scipy.stats import linregress
-import statsmodels.api as sm
+import pandas as pd # Manipulación y análisis de datos en estructuras tipo DataFrame
+import scipy.stats as stats # Módulo de estadísticas en SciPy, útil para pruebas estadísticas y distribuciones
+import statsmodels.api as sm # Biblioteca para modelos estadísticos, incluye regresión y pruebas estadísticas
+from statsmodels.formula.api import ols # Permite realizar Análisis de Varianza (ANOVA) y modelos de regresión con fórmulas
+from statsmodels.stats.multicomp import pairwise_tukeyhsd # Prueba de comparaciones múltiples de Tukey para ANOVA
+from tabulate import tabulate # Formatea datos en tablas bien organizadas para impresión en consola
+import numpy as np  # Cálculos numéricos eficientes con arreglos y funciones matemáticas avanzadas
+import matplotlib.pyplot as plt # Biblioteca de visualización para gráficos estáticos
+import seaborn as sns # Biblioteca de visualización basada en Matplotlib con gráficos más estilizados
+from scipy.stats import studentized_range # Distribución del rango studentizado, util en pruebas de comparaciones múltiples
+from scipy.stats import linregress # Realiza regresión lineal simple y proporciona métricas asociadas
+
+#############################################################################################################################################
 
 # aqui se carga el archivo CSV en el DataFrame
 df = pd.read_csv('data/datos_estudio.csv')
