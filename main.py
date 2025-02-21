@@ -11,37 +11,37 @@ from scipy.stats import studentized_range
 from scipy.stats import linregress
 import statsmodels.api as sm
 
-# Cargar el archivo CSV en el DataFrame
+# aqui se carga el archivo CSV en el DataFrame
 df = pd.read_csv('data/datos_estudio.csv')
 
-# Crear un Diccionario para almacenar sumas
+# Creo un Diccionario para almacenar sumas
 suma_columnas = {}
 
-# Realizar el cálculo de la suma de cada columna
+# Realizar el calculo de la suma de cada columna
 for columna in df.columns:
     suma_columnas[columna] = round(df[columna].sum(), 4)
 
-# Calcular la suma total de todas las columnas
+# Calculo la suma total de todas las columnas
 suma_total = round(sum(suma_columnas.values()), 4)
 
-# Crear un Diccionario para almacenar las sumas de los valores al cuadrado
+# Creo un Diccionario para almacenar las sumas de los valores al cuadrado
 suma_cuadrados = {}
 
-# Realizar el cálculo de la suma de los valores al cuadrado para cada columna
+# Hago el calculo de la suma de los valores al cuadrado para cada columna
 for columna in df.columns:
     suma_cuadrados[columna] = round((df[columna] ** 2).sum(), 4)
 
-# Calcular la suma total de las sumas de los cuadrados
+# hago el calculo de la suma total de las sumas de los cuadrados
 suma_total_cuadrados = round(sum(suma_cuadrados.values()), 4)
 
-# Crear un Diccionario para almacenar la cantidad de filas por columna
+# Creo un Diccionario para almacenar la cantidad de filas por columna
 cantidad_filas = {}
 
-# Contar la cantidad de filas en cada columna
+# Cuento la cantidad de filas en cada columna
 for columna in df.columns:
     cantidad_filas[columna] = len(df[columna])
 
-# Crear el DataFrame con los valores originales y sus cuadrados
+# Creo el DataFrame con los valores originales y sus cuadrados
 df_resultados = pd.DataFrame({
     "y (Oxido_nitroso)": df["Oxido_nitroso"].round(4),
     "y²": (df["Oxido_nitroso"] ** 2).round(4),
@@ -53,7 +53,7 @@ df_resultados = pd.DataFrame({
     "x3²": (df["Presión"] ** 2).round(4)
 })
 
-# Agregar la fila de sumas de Σxt
+# Agrego la fila de sumas de Σxt
 df_resultados.loc["Σxt"] = {
     "y (Oxido_nitroso)": suma_columnas["Oxido_nitroso"],
     "y²": "",
@@ -65,13 +65,13 @@ df_resultados.loc["Σxt"] = {
     "x3²": "",
 }
 
-# Añadir el total de las sumas en "Σxt"
+# Añado el total de las sumas en "Σxt"
 df_resultados.at["Σxt", "Total suma"] = round(
     suma_columnas["Oxido_nitroso"] + suma_columnas["Humedad"] +
     suma_columnas["Temperatura"] + suma_columnas["Presión"], 4
 )
 
-# Agregar la fila de Σxt²
+# Agrego la fila de Σxt²
 df_resultados.loc["Σxt²"] = {
     "y (Oxido_nitroso)": "",
     "y²": suma_cuadrados["Oxido_nitroso"],
@@ -83,13 +83,13 @@ df_resultados.loc["Σxt²"] = {
     "x3²": suma_cuadrados["Presión"],
 }
 
-# Añadir el total de los cuadrados en "Σxt²"
+# Añado el total de los cuadrados en "Σxt²"
 df_resultados.at["Σxt²", "Total suma"] = round(
     suma_cuadrados["Oxido_nitroso"] + suma_cuadrados["Humedad"] +
     suma_cuadrados["Temperatura"] + suma_cuadrados["Presión"], 4
 )
 
-# Calcular el cuadrado de las sumas totales
+# se Calcula el cuadrado de las sumas totales
 suma_totales_cuadrado = {
     "y (Oxido_nitroso)": suma_columnas["Oxido_nitroso"] ** 2,
     "x1 (Humedad)": suma_columnas["Humedad"] ** 2,
@@ -100,7 +100,7 @@ suma_totales_cuadrado = {
 # Calcular la suma total de los cuadrados
 total_suma_cuadrados = sum(suma_totales_cuadrado.values())
 
-# Añadir la fila de los (Σxt)²
+# Añado la fila de los (Σxt)²
 df_resultados.loc["(Σxt)²"] = {
     "y (Oxido_nitroso)": round(suma_totales_cuadrado["y (Oxido_nitroso)"], 4),
     "y²": "",
@@ -112,10 +112,10 @@ df_resultados.loc["(Σxt)²"] = {
     "x3²": "",
 }
 
-# Añadir el total de los (Σxt)²
+# Añado el total de los (Σxt)²
 df_resultados.at["(Σxt)²", "Total suma"] = round(total_suma_cuadrados, 4)
 
-# Crear la fila 'n' con el número de elementos por cada columna
+# Creo la fila 'n' con el número de elementos por cada columna
 df_resultados.loc["nt"] = {
     "y (Oxido_nitroso)": cantidad_filas["Oxido_nitroso"],
     "y²": "",
@@ -127,12 +127,12 @@ df_resultados.loc["nt"] = {
     "x3²": "",
 }
 
-# Añadir el total de las 'n' en "n"
+# Añado el total de las 'n' en "n"
 total_nt = cantidad_filas["Oxido_nitroso"] + cantidad_filas["Humedad"] + cantidad_filas["Temperatura"] + cantidad_filas["Presión"]
 df_resultados.at["nt", "Total suma"] = int(total_nt)  # Convierte el total a entero
 
 
-# Crear la fila '(Σxt)² / nt' dividiendo cada suma total al cuadrado entre su respectivo 'nt'
+# Creo la fila '(Σxt)² / nt' dividiendo cada suma total al cuadrado entre su respectivo 'nt'
 df_resultados.loc["(Σxt)² / nt"] = {
     "y (Oxido_nitroso)": round(suma_totales_cuadrado["y (Oxido_nitroso)"] / cantidad_filas["Oxido_nitroso"], 4),
     "y²": "",
@@ -144,7 +144,7 @@ df_resultados.loc["(Σxt)² / nt"] = {
     "x3²": "",
 }
 
-# Calcular el total correcto de (Σxt)² / nt
+# Calculo el total de (Σxt)² / nt
 total_xt2_n = (
     suma_totales_cuadrado["y (Oxido_nitroso)"] / cantidad_filas["Oxido_nitroso"] +
     suma_totales_cuadrado["x1 (Humedad)"] / cantidad_filas["Humedad"] +
@@ -154,7 +154,7 @@ total_xt2_n = (
 
 df_resultados.at["(Σxt)² / nt", "Total suma"] = round(total_xt2_n, 4)
 
-# Calcular la media (x̅) de cada columna
+# Calculo la media (x̅) de cada columna
 df_resultados.loc["x̅ (Media)"] = {
     "y (Oxido_nitroso)": round(suma_columnas["Oxido_nitroso"] / cantidad_filas["Oxido_nitroso"], 4),
     "y²": "",
@@ -166,7 +166,7 @@ df_resultados.loc["x̅ (Media)"] = {
     "x3²": "",
 }
 
-# Calcular el total de la media sumando los valores de cada columna
+# Calculo el total de la media sumando los valores de cada columna
 total_media = (
     suma_columnas["Oxido_nitroso"] / cantidad_filas["Oxido_nitroso"] +
     suma_columnas["Humedad"] / cantidad_filas["Humedad"] +
@@ -176,10 +176,10 @@ total_media = (
 
 df_resultados.at["x̅ (Media)", "Total suma"] = round(total_media, 4)
 
-# Reemplazar los NaN por cadenas vacías
+# Reemplazo todos los NaN por cadenas vacias
 df_resultados = df_resultados.fillna("")
 
-# Mostrar la tabla resultante
+# Muestro la tabla resultante
 table = tabulate(df_resultados, headers='keys', tablefmt='grid', showindex=True)
 print(table)
 print("\n")
@@ -190,7 +190,7 @@ nivel_significancia = 0.95
 alfa = 1 - nivel_significancia
 print(f"α (alfa): {round(alfa, 4)}\n")
 
-# Número de tratamientos (columnas)
+# Numero de tratamientos (columnas)
 t = len(df.columns)
 
 # Grados de libertad del tratamiento
@@ -271,38 +271,38 @@ fuente_variacion = pd.DataFrame({
 print("\nFuente de Variación:")
 print(tabulate(fuente_variacion, headers="keys", tablefmt="grid"))
 
-# Cálculo de F tabular
+# Calculo de F tabular
 Ftab = stats.f.ppf(1 - alfa, gl_tratamiento, gl_error)
 print(f"\nF tabular: {round(Ftab, 4)}\n")
 
-# Comparación y decisión
+# aqui se hace la Comparacion y decision
 decision = "Rechazar H₀ (Existe diferencia significativa)" if f > Ftab else "Aceptar H₀ (No hay diferencia significativa)"
 print(f"Decisión: {decision}")
 
-# Parámetros de la distribución F
+# estos son los Parametros de la distribución F
 df1 = gl_tratamiento  # Grados de libertad del tratamiento
 df2 = gl_error        # Grados de libertad del error
 x = np.linspace(0, Ftab + 3, 1000)  # Rango de valores F
-y = stats.f.pdf(x, df1, df2)  # Distribución F
+y = stats.f.pdf(x, df1, df2)  # Distribucion F
 
-# Crear el gráfico
+# Creo el grafico
 plt.figure(figsize=(8, 5))
 plt.plot(x, y, label="Distribución F", color="blue")
 
-# Área de aceptación (F <= Ftab)
+# Area de aceptacion (F <= Ftab)
 x_accept = np.linspace(0, Ftab, 500)
 y_accept = stats.f.pdf(x_accept, df1, df2)
 plt.fill_between(x_accept, y_accept, color="lightblue", alpha=0.6, label="Región de Aceptación")
 
-# Área de rechazo (F > Ftab)
+# Area de rechazo (F > Ftab)
 x_reject = np.linspace(Ftab, Ftab + 3, 500)
 y_reject = stats.f.pdf(x_reject, df1, df2)
 plt.fill_between(x_reject, y_reject, color="red", alpha=0.6, label="Región de Rechazo")
 
-# Línea vertical en Ftab
+# Linea vertical en Ftab
 plt.axvline(Ftab, color="black", linestyle="dashed", label=f"F tabular = {round(Ftab, 4)}")
 
-# Línea vertical en F observado
+# Linea vertical en F observado
 plt.axvline(f, color="green", linestyle="dashed", label=f"F observado = {round(f, 4)}")
 
 
@@ -312,20 +312,20 @@ plt.title("Distribución F de Fisher con Regiones de Aceptación y Rechazo")
 plt.legend()
 plt.grid()
 
-# Mostrar el gráfico
+# Muestro el grafico
 plt.show()
 
 ########################################################################################################################
 
-# Calcular las medias de cada grupo
+# Calculo las medias de cada grupo
 x_oxido_nitroso = df_resultados.at["x̅ (Media)", "y (Oxido_nitroso)"]
 x_humedad = df_resultados.at["x̅ (Media)", "x1 (Humedad)"]
 x_temperatura = df_resultados.at["x̅ (Media)", "x2 (Temperatura)"]
 x_Presión = df_resultados.at["x̅ (Media)", "x3 (Presión)"]
 
-num_grupos = t  # Número de grupos (columnas)
+num_grupos = t  # este es el numero de grupos (columnas)
 
-# Valor crítico q para HSD
+# Valor critico q para HSD
 q = studentized_range.ppf(1 - alfa, num_grupos, gl_error)
 
 # Calculo DHS (Diferencia Honestamente Significativa)
@@ -354,14 +354,14 @@ pares = [
     ("Temperatura", "Presión")
 ]
 
-# Crear la tabla de resultados
+# Creo la tabla de resultados
 tabla = []
 for g1, g2 in pares:
     meandiff = medias[g1] - medias[g2]
     independencia = "Independiente" if meandiff > hsd or meandiff > -hsd else "Dependiente"
     tabla.append([g1, g2, f"{meandiff:.4f}", f"{hsd:.4f}", independencia])
 
-# Imprimir la tabla con tabulate
+# Imprimo la tabla
 print("\nComparación de Medias - Prueba de Tukey\n")
 headers = ["Grupo 1", "Grupo 2", "Diferencia", "DHS", "Independencia"]
 print(tabulate(tabla, headers=headers, tablefmt="grid"))
@@ -389,15 +389,15 @@ def generar_tabla_correlacion(df, var_x, var_y):
     df_resultado.loc["Σ"] = suma_columnas
     return df_resultado
 
-# Crear una lista de pares independientes
+# Creo una lista de pares independientes
 pares_independientes = []
 
-# Analizar la tabla de comparación de medias
+# aqui se analiza la tabla de comparacion de medias
 for g1, g2, meandiff, hsd_val, independencia in tabla:
     if independencia == "Independiente":
         pares_independientes.append((g1, g2))
 
-# Función para generar las tablas de correlación automáticamente
+# Funcion para generar las tablas de correlacion
 def generar_tablas_de_correlacion(df, pares):
     for g1, g2 in pares:
         print(f"Generando tabla de correlación para: {g1} vs {g2}")
@@ -405,16 +405,16 @@ def generar_tablas_de_correlacion(df, pares):
         print(tabulate(tabla_correlacion, headers="keys", tablefmt="grid"))
         print("\n")
         
-        # Calcular la correlación para los pares
+        # Calculo la correlacion para los pares
         correlacion = df[g1].corr(df[g2])
         print(f"Correlación ({g1} vs {g2}): {round(correlacion, 4)}\n")
         
-        # Realizar la regresión lineal para los pares
+        # Realizo la regresion lineal para los pares
         slope, intercept, _, _, _ = linregress(df[g1], df[g2])
         print(f"Ecuación de la recta para {g1} vs {g2}: y = {round(slope, 4)} * x + {round(intercept, 4)}\n")
         
         
-        # Graficar la dispersión y la recta de regresión
+        # Grafico la dispersion y la recta de regresion
         plt.figure(figsize=(8, 6))
         plt.scatter(df[g1], df[g2], color='blue', label='Datos', alpha=0.6)  # Puntos de dispersión
         plt.plot(df[g1], slope * df[g1] + intercept, color='red', label=f'Recta de regresión: y = {round(slope, 4)} * x + {round(intercept, 4)}')  # Recta de regresión
@@ -425,7 +425,6 @@ def generar_tablas_de_correlacion(df, pares):
         plt.grid(True)
         plt.show()
 
-# Llamar a la función para generar las tablas de correlación y regresión para los pares independientes
 generar_tablas_de_correlacion(df, pares_independientes)
 
 ######################################################################################################################################################
@@ -435,7 +434,7 @@ x1 = df["Humedad"].values
 x2 = df["Temperatura"].values
 x3 = df["Presión"].values
 
-# Tabla de Regresión Múltiple
+# Tabla de Regresion Multiple
 dfmultiple = pd.DataFrame({
     "Óxido Nitroso (y)": y,
     "Humedad (x1)": x1,
@@ -453,36 +452,42 @@ dfmultiple = pd.DataFrame({
     "x1*x3": np.multiply(x1, x3)
 })
 
+# Calculo las sumatorias
 sumatorias = dfmultiple.sum()
-dfmultiple.loc["-------------"] = ["-" * 10] * dfmultiple.shape[1]
 dfmultiple.loc["Σ"] = sumatorias
 
 # Mostrar el DataFrame con las sumatorias
 print("\nTabla de Contingencia con Datos Calculados:")
 print(dfmultiple)
 
-# Mostrar los resultados de las sumatorias
-print("\n****Resultados de sumatorias en caso de que la tabla se resuma****")
-print(f"Σyt: {round(sumatorias['Óxido Nitroso (y)'], 4)}")
-print(f"Σx1t (Humedad): {round(sumatorias['Humedad (x1)'], 4)}")
-print(f"Σx2t (Temperatura): {round(sumatorias['Temperatura (x2)'], 4)}")
-print(f"Σx3t (Presión): {round(sumatorias['Presión (x3)'], 4)}")
-print(f"Σy^2: {round(sumatorias['y^2'], 4)}")
-print(f"Σx1^2: {round(sumatorias['x1^2'], 4)}")
-print(f"Σx2^2: {round(sumatorias['x2^2'], 4)}")
-print(f"Σx3^2: {round(sumatorias['x3^2'], 4)}")
-print(f"Σy*x1: {round(sumatorias['y*x1'], 4)}")
-print(f"Σy*x2: {round(sumatorias['y*x2'], 4)}")
-print(f"Σy*x3: {round(sumatorias['y*x3'], 4)}")
-print(f"Σx1*x2: {round(sumatorias['x1*x2'], 4)}")
-print(f"Σx2*x3: {round(sumatorias['x2*x3'], 4)}")
-print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")
+# Resultados de las sumatorias
+print("\n**** Resultados de sumatorias ****")
+sumatorias_resultados = {
+    "Σyt": round(sumatorias['Óxido Nitroso (y)'], 4),
+    "Σx1t (Humedad)": round(sumatorias['Humedad (x1)'], 4),
+    "Σx2t (Temperatura)": round(sumatorias['Temperatura (x2)'], 4),
+    "Σx3t (Presión)": round(sumatorias['Presión (x3)'], 4),
+    "Σy^2": round(sumatorias['y^2'], 4),
+    "Σx1^2": round(sumatorias['x1^2'], 4),
+    "Σx2^2": round(sumatorias['x2^2'], 4),
+    "Σx3^2": round(sumatorias['x3^2'], 4),
+    "Σy*x1": round(sumatorias['y*x1'], 4),
+    "Σy*x2": round(sumatorias['y*x2'], 4),
+    "Σy*x3": round(sumatorias['y*x3'], 4),
+    "Σx1*x2": round(sumatorias['x1*x2'], 4),
+    "Σx2*x3": round(sumatorias['x2*x3'], 4),
+    "Σx1*x3": round(sumatorias['x1*x3'], 4)
+}
+
+# Preparar datos para tabular
+tabla = [[key, value] for key, value in sumatorias_resultados.items()]
+
+# Mostrar resultados de sumatorias con tabulado
+print(tabulate(tabla, headers=["Descripción", "Valor"], tablefmt="grid"))
 print("\n")
+#################################################################################################################3
 
-import numpy as np
-from tabulate import tabulate
-
-# Función para resolver el sistema de ecuaciones usando el método de Gauss-Jordan
+# Funcion para resolver el sistema de ecuaciones usando el metodo de Gauss-Jordan
 def gauss_jordan(A, B):
     AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
     n = len(B)
@@ -497,12 +502,12 @@ def gauss_jordan(A, B):
     
     return AB  # Retornar la matriz ampliada resuelta
 
-# Función para calcular la regresión
+# Funcion para calcular la regresion
 def calcular_regresion(dfmultiple):
     try:
-        # Acceder a la fila de sumatorias correctamente
+        # Acceder a la fila de sumatorias
         sumatorias = dfmultiple.loc["Σ"]  
-        n = len(y)  # Número de observaciones
+        n = len(y)  # Numero de observaciones
         
         # Construir la matriz A y el vector B
         A = np.array([
@@ -532,14 +537,14 @@ def calcular_regresion(dfmultiple):
         # Resolver el sistema usando Gauss-Jordan
         matriz_resuelta = gauss_jordan(A, B)
         
-        # Mostrar la matriz resultante
+        # Muestro la matriz resultante
         print("\nMatriz resultante [A|B]:")
         print(tabulate(matriz_resuelta, headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
         
         # Extraer los resultados
         resultados = matriz_resuelta[:, -1]
         
-        # Mostrar resultados
+        # Muestro los resultados
         print("\nResultados:")
         print(f"B0 = {resultados[0]:.4f}")
         print(f"B1 = {resultados[1]:.4f}")
@@ -550,5 +555,5 @@ def calcular_regresion(dfmultiple):
         print(f"Error al calcular la regresión: {e}")
         return None
 
-# Calcular los coeficientes de regresión
+# Calculo los coeficientes de regresion
 coeficientes = calcular_regresion(dfmultiple)
