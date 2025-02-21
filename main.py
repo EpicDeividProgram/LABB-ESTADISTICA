@@ -430,57 +430,59 @@ generar_tablas_de_correlacion(df, pares_independientes)
 
 ######################################################################################################################################################
 
+y = df["Oxido_nitroso"].values
+x1 = df["Humedad"].values
+x2 = df["Temperatura"].values
+x3 = df["Presión"].values
 
-"""
-necesito hacer la tabla de contingencia osea y, x1, x2, x3, x1i^2, x1i x x2i, x1i x x3i, x1i x yi, x2i^2, x2i x x3i, x2i x yi, x3i^2, x3i x yi
-usaremos la misma estructura de la tabla que traajamos
+# Tabla de Regresión Múltiple
+dfmultiple = pd.DataFrame({
+    "Óxido Nitroso (y)": y,
+    "Humedad (x1)": x1,
+    "Temperatura (x2)": x2,
+    "Presión (x3)": x3,
+    "y^2": np.square(y),
+    "x1^2": np.square(x1),
+    "x2^2": np.square(x2),
+    "x3^2": np.square(x3),
+    "y*x1": np.multiply(y, x1),
+    "y*x2": np.multiply(y, x2),
+    "y*x3": np.multiply(y, x3),
+    "x1*x2": np.multiply(x1, x2),
+    "x2*x3": np.multiply(x2, x3),
+    "x1*x3": np.multiply(x1, x3)
+})
 
-luego aremos regresion multiple y luego el metodo de gausjordan y me debe dar por consola la matriz final osea la del resultado
-"""
-# Función para calcular la tabla de contingencia
-def crear_tabla_contingencia(df):
-    df_contingencia = pd.DataFrame({
-        "y (Oxido_nitroso)": df["Oxido_nitroso"].round(4),
-        "x1 (Humedad)": df["Humedad"].round(4),
-        "x2 (Temperatura)": df["Temperatura"].round(4),
-        "x3 (Presión)": df["Presión"].round(4),
-        "x1²": (df["Humedad"] ** 2).round(4),
-        "x1 * x2": (df["Humedad"] * df["Temperatura"]).round(4),
-        "x1 * x3": (df["Humedad"] * df["Presión"]).round(4),
-        "x1 * y": (df["Humedad"] * df["Oxido_nitroso"]).round(4),
-        "x2²": (df["Temperatura"] ** 2).round(4),
-        "x2 * x3": (df["Temperatura"] * df["Presión"]).round(4),
-        "x2 * y": (df["Temperatura"] * df["Oxido_nitroso"]).round(4),
-        "x3²": (df["Presión"] ** 2).round(4),
-        "x3 * y": (df["Presión"] * df["Oxido_nitroso"]).round(4)
-    })
+sumatorias = dfmultiple.sum()
+dfmultiple.loc["-------------"] = ["-" * 10] * dfmultiple.shape[1]
+dfmultiple.loc["Σ"] = sumatorias
 
-    suma_contingencia = {
-        "y (Oxido_nitroso)": df["Oxido_nitroso"].sum(),
-        "x1 (Humedad)": df["Humedad"].sum(),
-        "x2 (Temperatura)": df["Temperatura"].sum(),
-        "x3 (Presión)": df["Presión"].sum(),
-        "x1²": (df["Humedad"] ** 2).sum(),
-        "x1 * x2": (df["Humedad"] * df["Temperatura"]).sum(),
-        "x1 * x3": (df["Humedad"] * df["Presión"]).sum(),
-        "x1 * y": (df["Humedad"] * df["Oxido_nitroso"]).sum(),
-        "x2²": (df["Temperatura"] ** 2).sum(),
-        "x2 * x3": (df["Temperatura"] * df["Presión"]).sum(),
-        "x2 * y": (df["Temperatura"] * df["Oxido_nitroso"]).sum(),
-        "x3²": (df["Presión"] ** 2).sum(),
-        "x3 * y": (df["Presión"] * df["Oxido_nitroso"]).sum()
-    }
+# Mostrar el DataFrame con las sumatorias
+print("\nTabla de Contingencia con Datos Calculados:")
+print(dfmultiple)
 
-    df_contingencia.loc["Σxt"] = suma_contingencia
-    return df_contingencia
+# Mostrar los resultados de las sumatorias
+print("\n****Resultados de sumatorias en caso de que la tabla se resuma****")
+print(f"Σyt: {round(sumatorias['Óxido Nitroso (y)'], 4)}")
+print(f"Σx1t (Humedad): {round(sumatorias['Humedad (x1)'], 4)}")
+print(f"Σx2t (Temperatura): {round(sumatorias['Temperatura (x2)'], 4)}")
+print(f"Σx3t (Presión): {round(sumatorias['Presión (x3)'], 4)}")
+print(f"Σy^2: {round(sumatorias['y^2'], 4)}")
+print(f"Σx1^2: {round(sumatorias['x1^2'], 4)}")
+print(f"Σx2^2: {round(sumatorias['x2^2'], 4)}")
+print(f"Σx3^2: {round(sumatorias['x3^2'], 4)}")
+print(f"Σy*x1: {round(sumatorias['y*x1'], 4)}")
+print(f"Σy*x2: {round(sumatorias['y*x2'], 4)}")
+print(f"Σy*x3: {round(sumatorias['y*x3'], 4)}")
+print(f"Σx1*x2: {round(sumatorias['x1*x2'], 4)}")
+print(f"Σx2*x3: {round(sumatorias['x2*x3'], 4)}")
+print(f"Σx1*x3: {round(sumatorias['x1*x3'], 4)}")
+print("\n")
 
-df_contingencia = crear_tabla_contingencia(df)
+import numpy as np
+from tabulate import tabulate
 
-
-print("Tabla de Contingencia:")
-print(tabulate(df_contingencia, headers='keys', tablefmt='grid', showindex=True, floatfmt='.2f'))
-############################################################################################################################
-
+# Función para resolver el sistema de ecuaciones usando el método de Gauss-Jordan
 def gauss_jordan(A, B):
     AB = np.hstack([A, B.reshape(-1, 1)])  # Matriz ampliada [A|B]
     n = len(B)
@@ -489,51 +491,64 @@ def gauss_jordan(A, B):
         # Hacer el pivote 1
         AB[i] = AB[i] / AB[i, i]
         
-        
         for j in range(n):
             if i != j:
                 AB[j] = AB[j] - AB[j, i] * AB[i]
     
-    return AB[:, -1]  
+    return AB  # Retornar la matriz ampliada resuelta
 
-def calcular_regresion(df_contingencia):
-    
-    sumatorias = df_contingencia.loc["Σxt"]
-    n = len(df_contingencia) - 1  
-    
-    
-    A = np.array([
-        [n, sumatorias["x1 (Humedad)"], sumatorias["x2 (Temperatura)"]],
-        [sumatorias["x1 (Humedad)"], sumatorias["x1²"], sumatorias["x1 * x2"]],
-        [sumatorias["x2 (Temperatura)"], sumatorias["x1 * x2"], sumatorias["x2²"]]
-    ])
-    
-    
-    det_A = np.linalg.det(A)
-    if np.isclose(det_A, 0):
-        raise ValueError("La matriz A no es invertible (det(A) = 0). El sistema no tiene solución única.")
-    
-    
-    B = np.array([
-        sumatorias["x1 (Humedad)"],
-        sumatorias["x1 * x2"],
-        sumatorias["x1 * x3"]
-    ])
-    
-    
-    print("Matriz ampliada [A|B]:")
-    print(tabulate(np.hstack([A, B.reshape(-1, 1)]), headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
-    
-    
-    resultados = gauss_jordan(A, B)
-    
-    # Mostrar resultados
-    print("\nResultados:")
-    print(f"B0 = {resultados[0]:.4f}")
-    print(f"B1 = {resultados[1]:.4f}")
-    print(f"B2 = {resultados[2]:.4f}")
-    
-    return resultados
+# Función para calcular la regresión
+def calcular_regresion(dfmultiple):
+    try:
+        # Acceder a la fila de sumatorias correctamente
+        sumatorias = dfmultiple.loc["Σ"]  
+        n = len(y)  # Número de observaciones
+        
+        # Construir la matriz A y el vector B
+        A = np.array([
+            [n, sumatorias["Temperatura (x2)"], sumatorias["Presión (x3)"]],
+            [sumatorias["Temperatura (x2)"], sumatorias["x2^2"], sumatorias["x2*x3"]],
+            [sumatorias["Presión (x3)"], sumatorias["x2*x3"], sumatorias["x3^2"]]
+        ])
+        
+        # Verificar si la matriz A es invertible
+        det_A = np.linalg.det(A)
+        if np.isclose(det_A, 0):
+            raise ValueError("La matriz A no es invertible (det(A) = 0). El sistema no tiene solución única.")
+        
+        # Vector B
+        B = np.array([
+            sumatorias["Humedad (x1)"],
+            sumatorias["x1*x2"],
+            sumatorias["x1*x3"]
+        ])
+                                     
+        
+        # Mostrar la matriz ampliada [A|B]
+        print("Matriz ampliada [A|B]:")
+        print(tabulate(np.hstack([A, B.reshape(-1, 1)]), headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
+        
+        
+        # Resolver el sistema usando Gauss-Jordan
+        matriz_resuelta = gauss_jordan(A, B)
+        
+        # Mostrar la matriz resultante
+        print("\nMatriz resultante [A|B]:")
+        print(tabulate(matriz_resuelta, headers=["B0", "B1", "B2", "B"], tablefmt='grid', floatfmt='.4f'))
+        
+        # Extraer los resultados
+        resultados = matriz_resuelta[:, -1]
+        
+        # Mostrar resultados
+        print("\nResultados:")
+        print(f"B0 = {resultados[0]:.4f}")
+        print(f"B1 = {resultados[1]:.4f}")
+        print(f"B2 = {resultados[2]:.4f}")
+        
+        return resultados
+    except Exception as e:
+        print(f"Error al calcular la regresión: {e}")
+        return None
 
 # Calcular los coeficientes de regresión
-coeficientes = calcular_regresion(df_contingencia)
+coeficientes = calcular_regresion(dfmultiple)
